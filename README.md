@@ -1,2 +1,2 @@
 # STA
-The cosmos turn based strategy game.
+The turn based strategy game.
