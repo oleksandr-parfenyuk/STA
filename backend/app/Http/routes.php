@@ -12,7 +12,9 @@
 */
 
 $app->get('/', function () use ($app) {
-    return $app->version();
+  return $app->version();
 });
 
-$app->get('/world/lists', 'WorldController@index');
+$app->group(['middleware' => 'jwt.auth'], function($app) {
+  $app->get('/world/lists', 'WorldController@index');
+});

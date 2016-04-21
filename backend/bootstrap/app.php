@@ -26,9 +26,17 @@ $app = new Laravel\Lumen\Application(
 $app->register('Jenssegers\Mongodb\MongodbServiceProvider');
 
 
-// $app->withFacades();
-
+$app->withFacades();
 $app->withEloquent();
+
+// https://laravelista.com/json-web-token-authentication-for-lumen
+// added JWT handler
+$app->configure('jwt');
+class_alias('Tymon\JWTAuth\Facades\JWTAuth', 'JWTAuth');
+class_alias('Tymon\JWTAuth\Facades\JWTFactory', 'JWTFactory'); // Optional
+
+$app->alias('cache', 'Illuminate\Cache\CacheManager');
+$app->alias('auth', 'Illuminate\Auth\AuthManager');
 
 /*
 |--------------------------------------------------------------------------
@@ -62,13 +70,17 @@ $app->singleton(
 |
 */
 
+
+
 // $app->middleware([
 //    App\Http\Middleware\ExampleMiddleware::class
 // ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+$app->routeMiddleware([
+    // 'auth' => App\Http\Middleware\Authenticate::class,
+    'jwt.auth'    => Tymon\JWTAuth\Middleware\GetUserFromToken::class,
+    'jwt.refresh' => Tymon\JWTAuth\Middleware\RefreshToken::class,
+]);
 
 /*
 |--------------------------------------------------------------------------
@@ -81,9 +93,10 @@ $app->singleton(
 |
 */
 
-// $app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
+$app->register('Tymon\JWTAuth\Providers\JWTAuthServiceProvider');
 
 /*
 |--------------------------------------------------------------------------
