@@ -73,13 +73,14 @@ $app->singleton(
 
 
 // $app->middleware([
-//    App\Http\Middleware\ExampleMiddleware::class
+    //App\Http\Middleware\ValidationMiddleware::class
 // ]);
 
 $app->routeMiddleware([
     // 'auth' => App\Http\Middleware\Authenticate::class,
     'jwt.auth'    => Tymon\JWTAuth\Middleware\GetUserFromToken::class,
     'jwt.refresh' => Tymon\JWTAuth\Middleware\RefreshToken::class,
+    'validation' => App\Http\Middleware\ValidationMiddleware::class,
 ]);
 
 /*
