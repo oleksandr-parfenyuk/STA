@@ -7,7 +7,18 @@ use Validator;
 
 class ValidationMiddleware
 {
-    private $_validationRules = [];
+    private $_validationRules = [
+      "user_signup" => [
+        [
+          "field_name" => "name",
+          "field_rules" => "required"
+        ],
+        [
+          "field_name" => "email",
+          "field_rules" => "required|email"
+        ]
+      ],
+    ];
   
     /**
      * Handle an incoming request.
@@ -16,17 +27,23 @@ class ValidationMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next, $tt)
+    public function handle($request, Closure $next, $tt = "")
     {
-        if (in_array($tt, $this->_validationRules)) {
+      if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
+        $params = $request->json();
+        if (in_array($tt, array_keys($this->_validationRules))) {
+          
+          $validationParams = array();
+          $validationRules = array();
+          
+          foreach ($this->_validationRules[$tt] as $validationObj) {
+            $validationParams[$validationObj["field_name"]] = $params->get($validationObj["field_name"]);
+            $validationRules[$validationObj["field_name"]] = $validationObj["field_rules"];
+          }
           // validate array
           $validator = Validator::make(
-            array(
-              $this->_validationRules[$tt]["field_name"] => $request->input($this->_validationRules[$tt]["field_name"])
-            ),
-            array(
-              $this->_validationRules[$tt]["field_name"] => $this->_validationRules[$tt]["field_rules"]
-            )
+            $validationParams,
+            $validationRules
           );
           
           if ($validator->fails()) {
@@ -34,6 +51,9 @@ class ValidationMiddleware
           }
         }
         return $next($request);
+      } else {
+        return array("status" => "error", "message" => "Wrong type data of request.");
+      }
     }
     
     
