@@ -16,6 +16,10 @@ class ValidationMiddleware
         [
           "field_name" => "email",
           "field_rules" => "required|email"
+        ],
+        [
+          "field_name" => "password",
+          "field_rules" => "required"
         ]
       ],
     ];
