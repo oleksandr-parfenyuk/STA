@@ -12,5 +12,12 @@
 */
 
 $app->get('/', function () use ($app) {
-    return $app->version();
+  return $app->version();
+});
+
+$app->post('/user/signup', ['middleware' => 'validation:user_signup', 'uses' => 'UserController@signup']);
+$app->get('/user/refresh_token', ['uses' => 'UserController@refresh_token']);
+
+$app->group(['middleware' => 'auth', 'namespace' => 'App\Http\Controllers'], function($app) {
+  $app->get('/world/lists', ['middleware' => 'validation:world_lists', 'uses' => 'WorldController@index']);
 });
